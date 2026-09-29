@@ -1,0 +1,43 @@
+/* ==========================================================
+   22 Yards design tokens
+   Blue  → navigation, selected states, secondary actions, lines, some headings
+   Gold  → primary CTAs, highlights, section markers, stats, key words
+   Gold is a fill/background colour; use --gold-ink when gold must be text on white.
+   ========================================================== */
+:root {
+  --white: #fbfaf7;
+  --paper: #f2f0e9;
+  --card: #ffffff;
+
+  --ink: #10141c;
+  --ink-2: #3a404c;
+  --ink-3: #5f6572;
+
+  --blue: #123a8f;
+  --blue-deep: #0c2a6b;
+  --blue-tint: rgba(18, 58, 143, 0.08);
+  --yellow: #f2b705;
+  --gold-ink: #8a6400;
+  --ball: #7c1520;
+
+  --line: rgba(16, 20, 28, 0.08);
+  --line-strong: rgba(16, 20, 28, 0.16);
+
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --header-h: 60px;
+  --gutter: clamp(16px, 5vw, 56px);
+  --ball-gutter: 0px;
+  --max-w: 1320px;
+
+  color-scheme: light;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 68px;
+    /* room on the right of each scene for the docked ball */
+    --ball-gutter: clamp(110px, 12vw, 200px);
+  }
+}

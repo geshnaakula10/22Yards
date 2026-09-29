@@ -1,0 +1,113 @@
+/* ==========================================================
+   Scene track: one pinned stage, scenes stacked inside it.
+   ========================================================== */
+.track { position: relative; z-index: 1; }
+
+.track__marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.track--live .track__stage {
+  position: sticky;
+  top: 0;
+  z-index: 2; /* above the ball layer, so the ball sits behind scene content */
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  overflow: clip;
+}
+
+.track--live .scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.track--live .scene__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  overflow: clip;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.track--live .scene__frame.is-active { pointer-events: auto; }
+
+.track--live .scene__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--header-h) + clamp(20px, 5vh, 56px)) 0 clamp(96px, 12vh, 120px);
+}
+.track--live [data-reveal] { will-change: opacity, transform; }
+
+@media (min-width: 640px) {
+  .track--live .scene__content { padding-bottom: clamp(120px, 14vh, 150px); }
+}
+@media (min-width: 1024px) {
+  .track--live .scene__content { padding-bottom: clamp(32px, 7vh, 72px); }
+  .track--live .scene:not(.scene--hero) .container {
+    padding-right: calc(var(--gutter) + var(--ball-gutter));
+  }
+}
+
+/* Reduced motion: plain, fully visible sections in document flow */
+.track--static .scene__content {
+  padding: clamp(72px, 12vh, 128px) 0;
+}
+.track--static .scene--hero .scene__content {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: var(--header-h);
+}
+.track--static .scene { scroll-margin-top: var(--header-h); }
+
+/* ==========================================================
+   Persistent ball layer (fixed, positioned by JS)
+   ========================================================== */
+.ball-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 400px;
+  height: 400px;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+.ball-layer__inner { width: 100%; height: 100%; }
+.ball-graphic { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* ==========================================================
+   Progress bar
+   ========================================================== */
+.progress-track {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: var(--line);
+  z-index: 40;
+  transition: opacity 0.3s ease;
+}
+.progress-fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--blue), var(--yellow));
+}
