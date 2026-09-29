@@ -37,6 +37,8 @@
   will-change: opacity, transform;
 }
 .track--live .scene__frame.is-active { pointer-events: auto; }
+/* off stage: beats the exit timeline's inline opacity (see SceneTrack) */
+.track--live .scene__frame.is-dormant { opacity: 0 !important; }
 
 .track--live .scene__content {
   position: absolute;
@@ -49,31 +51,143 @@
   justify-content: center;
   padding: calc(var(--header-h) + clamp(20px, 5vh, 56px)) 0 clamp(96px, 12vh, 120px);
 }
-.track--live [data-reveal] { will-change: opacity, transform; }
 
 @media (min-width: 640px) {
   .track--live .scene__content { padding-bottom: clamp(120px, 14vh, 150px); }
 }
 @media (min-width: 1024px) {
+  .track--live {
+    --ruler-w: 64px;
+    /* clear the pitch ruler on the left, but only where the container's own margin doesn't already */
+    --container-pl: max(var(--gutter), calc(var(--ruler-w) + 20px - max(0px, (100vw - var(--max-w)) / 2)));
+  }
   .track--live .scene__content { padding-bottom: clamp(32px, 7vh, 72px); }
   .track--live .scene:not(.scene--hero) .container {
     padding-right: calc(var(--gutter) + var(--ball-gutter));
   }
 }
 
-/* Reduced motion: plain, fully visible sections in document flow */
-.track--static .scene__content {
-  padding: clamp(72px, 12vh, 128px) 0;
-}
-.track--static .scene--hero .scene__content {
-  min-height: 100vh;
-  min-height: 100svh;
+/* Hero: identical box in both tracks, so the switch after hydration doesn't jump */
+.track .scene--hero .scene__content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-top: var(--header-h);
+  justify-content: flex-start;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: var(--header-h) 0 0;
 }
-.track--static .scene { scroll-margin-top: var(--header-h); }
+
+/* Reduced motion / prerendered HTML: plain, fully visible sections in document flow */
+.track--static .scene { position: relative; isolation: isolate; scroll-margin-top: var(--header-h); }
+.track--static .scene__content { padding: clamp(72px, 12vh, 128px) 0; }
+.track--static .scene__backdrop { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+
+/* ==========================================================
+   Dark scenes: re-point the tokens
+   ========================================================== */
+.scene--dark {
+  --ink: #ffffff;
+  --ink-2: rgba(255, 255, 255, 0.8);
+  --ink-3: rgba(255, 255, 255, 0.6);
+  --bg: var(--night);
+  --card: rgba(255, 255, 255, 0.05);
+  --paper: rgba(255, 255, 255, 0.06);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --blue-tint: rgba(255, 255, 255, 0.1);
+  --accent: var(--yellow);
+  --spot: rgba(242, 183, 5, 0.12);
+  color: var(--ink);
+}
+.scene--dark .marker { color: var(--ink-2); }
+
+/* ==========================================================
+   Backdrops (dark / photo scenes). Live: fixed layers under the ball,
+   faded by the track. Static: inside the section.
+   ========================================================== */
+.track__backdrops {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.track__backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
+}
+
+.bd {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(110% 80% at 15% 0%, #16264f 0%, var(--night) 62%);
+}
+.bd--blue {
+  background:
+    radial-gradient(90% 90% at 88% 8%, #2a5bd4 0%, transparent 60%),
+    linear-gradient(160deg, var(--blue) 0%, var(--blue-deep) 100%);
+}
+.bd__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.15) brightness(0.9);
+  opacity: 0.5;
+  transform-origin: 50% 60%;
+}
+.bd__shade { position: absolute; inset: 0; }
+.bd--photo .bd__shade {
+  background:
+    linear-gradient(90deg, rgba(7, 11, 23, 0.94) 0%, rgba(7, 11, 23, 0.72) 50%, rgba(10, 36, 102, 0.55) 100%),
+    linear-gradient(0deg, rgba(7, 11, 23, 0.85) 0%, transparent 45%);
+}
+/* pitch markings: a popping crease and return creases, very faint */
+.bd__lines {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.07) 0 0) 0 78% / 100% 1px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.07) 0 0) 22% 0 / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.07) 0 0) 78% 0 / 1px 100% no-repeat;
+}
+.bd--blue .bd__lines {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12) 0 0) 0 82% / 100% 2px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.12) 0 0) 0 18% / 100% 2px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.08) 0 0) 30% 0 / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.08) 0 0) 70% 0 / 1px 100% no-repeat;
+}
+
+/* ==========================================================
+   Horizontal rail (gallery)
+   ========================================================== */
+.rail-viewport { width: 100%; }
+.rail {
+  position: relative;
+  display: flex;
+  gap: clamp(12px, 1.6vw, 24px);
+  margin: 0;
+  padding: 0;
+  padding-left: calc(max(0px, (100vw - var(--max-w)) / 2) + var(--container-pl));
+  list-style: none;
+}
+.rail::after { content: ""; flex: 0 0 calc(var(--gutter) + var(--ball-gutter)); }
+.track--live .rail { will-change: transform; }
+/* photos slide out under the pitch ruler's edge rather than beneath its ticks */
+.track--live .rail-viewport { clip-path: inset(-20px 0 -20px var(--ruler-w)); }
+
+.track--static .rail-viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  padding-bottom: 0.5rem;
+}
+.track--static .rail__item { scroll-snap-align: start; }
 
 /* ==========================================================
    Persistent ball layer (fixed, positioned by JS)
@@ -90,24 +204,115 @@
   visibility: hidden;
   will-change: transform, opacity;
 }
-.ball-layer__inner { width: 100%; height: 100%; }
 .ball-graphic { width: 100%; height: 100%; display: block; overflow: visible; }
 
 /* ==========================================================
-   Progress bar
+   Pitch ruler: scroll progress over 22 yards
    ========================================================== */
-.progress-track {
+.pitch-ruler {
+  --p: 0;
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: 3px;
-  background: var(--line);
   z-index: 40;
-  transition: opacity 0.3s ease;
+  pointer-events: none;
+  color: var(--ink);
+  transition: opacity 0.4s ease, color 0.4s ease;
 }
-.progress-fill {
-  height: 100%;
-  width: 100%;
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  background: linear-gradient(90deg, var(--blue), var(--yellow));
+.pitch-ruler.is-done,
+.pitch-ruler.is-hero { opacity: 0; }
+.pitch-ruler__fill {
+  position: absolute;
+  background: linear-gradient(var(--blue), var(--yellow));
 }
+
+@media (min-width: 1024px) {
+  .pitch-ruler {
+    left: 0;
+    top: calc(var(--header-h) + 32px);
+    bottom: 36px;
+    width: var(--ruler-w, 64px);
+  }
+  .pitch-ruler__rail {
+    position: absolute;
+    left: 44px;
+    top: 0;
+    bottom: 40px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .pitch-ruler__tick {
+    position: absolute;
+    left: 0;
+    top: calc(var(--i) * 100%);
+    width: 6px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+  }
+  .pitch-ruler__tick.is-major { left: -7px; width: 15px; height: 2px; opacity: 0.7; }
+  .pitch-ruler__fill {
+    left: -1px;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    transform-origin: 50% 0;
+    transform: scaleY(var(--p));
+  }
+  .pitch-ruler__mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    transform: translateY(calc(var(--p) * 100%));
+  }
+  .pitch-ruler__ball {
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d8434f, var(--ball) 70%);
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--line-strong);
+  }
+  .pitch-ruler__readout {
+    position: absolute;
+    right: 14px;
+    top: -9px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font: 600 0.7rem/1 var(--font-mono);
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .pitch-ruler__readout small { margin-top: 3px; font-size: 0.56rem; opacity: 0.6; text-transform: uppercase; }
+  .pitch-ruler__stumps {
+    position: absolute;
+    left: 34px;
+    bottom: 0;
+    width: 21px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 1023px) {
+  .pitch-ruler { left: 0; right: 0; bottom: 0; height: 3px; }
+  .pitch-ruler__rail { position: absolute; inset: 0; background: var(--line); }
+  .pitch-ruler__fill {
+    inset: 0;
+    background: linear-gradient(90deg, var(--blue), var(--yellow));
+    transform-origin: 0 50%;
+    transform: scaleX(var(--p));
+  }
+  .pitch-ruler__tick,
+  .pitch-ruler__mark,
+  .pitch-ruler__stumps { display: none; }
+}
+
+html[data-tone="dark"] .pitch-ruler { color: #fff; --bg: var(--night); --line-strong: rgba(255, 255, 255, 0.22); --line: rgba(255, 255, 255, 0.12); }

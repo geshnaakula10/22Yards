@@ -2,37 +2,66 @@ import { useEffect, useRef } from "react";
 import anime from "animejs";
 import BallGraphic from "./BallGraphic";
 import { useSceneTrack } from "../scroll/SceneTrack";
-import { BALL_BOX, ballFrame } from "../../animations/scroll/ballAnimation";
+import { BALL_BOX, ballFrame, hopHeight } from "../../animations/scroll/ballAnimation";
+import { INTRO } from "../../animations/hero/heroIntro";
+
+/** Hop / drop heights in SVG units (the box is 400), so they scale with the ball. */
+const HOP = 150;
+const DROP = 1100;
 
 /**
  * The cricket ball as a single fixed layer that lives for the whole scene
- * track: it starts in the hero's ball slot, docks at the edge of the screen
- * for the following scenes (behind their content), keeps spinning with
- * scroll the entire time, and slides out just before the footer.
+ * track: it drops into the hero's ball slot on load, docks at the edge of the
+ * screen for the following scenes (behind their content), hops on every
+ * scene change, keeps spinning with scroll the entire time, and slides out
+ * just before the footer.
  *
- * Not rendered under prefers-reduced-motion — the hero shows a static ball.
+ * Only rendered on the live track — the static track draws a still ball in the hero.
  */
 export default function PersistentBall() {
   const track = useSceneTrack();
   const wrapRef = useRef(null);
-  const innerRef = useRef(null);
   const seamRef = useRef(null);
+  const bodyRef = useRef(null);
+  const shadowRef = useRef(null);
+  const lift = useRef({ drop: 1, hop: 0 });
 
-  // Same one-off entrance as the original hero.
+  // One writer for the body/shadow, fed by both the drop-in and scroll hops.
+  const applyLift = () => {
+    const { drop, hop } = lift.current;
+    const units = drop * DROP + hop * HOP;
+    bodyRef.current?.setAttribute("transform", `translate(200,${(200 - units).toFixed(1)})`);
+    const h = Math.min(1, units / HOP);
+    shadowRef.current?.setAttribute("rx", (92 * (1 - 0.45 * h)).toFixed(1));
+    shadowRef.current?.setAttribute("opacity", (0.16 * (1 - 0.7 * h)).toFixed(3));
+  };
+
   useEffect(() => {
-    if (track.reduced) return undefined;
-    const entrance = anime({
-      targets: innerRef.current,
-      scale: [0.85, 1],
-      opacity: [0, 1],
-      duration: 500,
-      easing: "easeOutQuad",
+    if (!track.live) return undefined;
+    // Very slow start: the prerendered still ball has already faded in (CSS,
+    // 2.5s), so take over in place instead of re-dropping it.
+    if (performance.now() > 2400) {
+      lift.current.drop = 0;
+      applyLift();
+      return undefined;
+    }
+    applyLift();
+    const drop = anime({
+      targets: lift.current,
+      drop: [1, 0],
+      delay: INTRO.ballDelay,
+      duration: 1500,
+      easing: "easeOutBounce",
+      update: applyLift,
     });
-    return () => entrance.pause();
-  }, [track.reduced]);
+    return () => {
+      drop.pause();
+      lift.current.drop = 0;
+    };
+  }, [track.live]);
 
   useEffect(() => {
-    if (track.reduced) return undefined;
+    if (!track.live) return undefined;
     return track.subscribeFrame((f) => {
       const wrap = wrapRef.current;
       if (!wrap) return;
@@ -42,16 +71,19 @@ export default function PersistentBall() {
       wrap.style.opacity = b.opacity.toFixed(3);
       wrap.style.visibility = b.opacity > 0.001 ? "visible" : "hidden";
       seamRef.current?.setAttribute("transform", `rotate(${b.rotation.toFixed(2)})`);
+      const hop = hopHeight(f.progress);
+      if (hop !== lift.current.hop) {
+        lift.current.hop = hop;
+        applyLift();
+      }
     });
   }, [track]);
 
-  if (track.reduced) return null;
+  if (!track.live) return null;
 
   return (
     <div className="ball-layer" ref={wrapRef} aria-hidden="true">
-      <div className="ball-layer__inner" ref={innerRef}>
-        <BallGraphic seamRef={seamRef} />
-      </div>
+      <BallGraphic seamRef={seamRef} bodyRef={bodyRef} shadowRef={shadowRef} />
     </div>
   );
 }

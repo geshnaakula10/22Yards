@@ -10,18 +10,17 @@ export function statsEnter(tl, content) {
       round: 1,
       duration: 900,
       easing: "easeOutExpo",
-      delay: (_, i) => i * 80,
+      delay: (_, i) => 200 + i * 90,
     },
     150
   );
 }
 
+/** Dark scene over the lanes photo: the facility in four numbers. */
 export default function Stats() {
   return (
     <div className="container">
-      <div data-reveal>
-        <SectionHeading id="facilities-title" index="04" label="Facilities" title="The facility at a glance" />
-      </div>
+      <SectionHeading id="facilities-title" index="04" label="Facilities" title="The facility at a glance" />
       <dl className="stat-grid">
         {facilityStats.map((stat) => (
           <div className="stat" key={stat.label} data-reveal>
@@ -33,6 +32,7 @@ export default function Stats() {
               </span>
               <span className="visually-hidden">or more</span>
             </dd>
+            <dd className="stat__note">{stat.note}</dd>
           </div>
         ))}
       </dl>

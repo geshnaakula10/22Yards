@@ -1,0 +1,14 @@
+{
+  "name": "22 Yards Houston",
+  "short_name": "22 Yards",
+  "description": "Indoor cricket lanes, coaching and box cricket in Houston, TX.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#070b17",
+  "theme_color": "#f8f7f3",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,17 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>22 Yards Houston — Indoor Cricket</title>
-    <meta name="description" content="22 Yards Houston — indoor cricket lanes, coaching programs, box cricket and events in Houston, TX." />
-    <meta name="theme-color" content="#fbfaf7" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+    <!-- title, description, canonical, Open Graph and JSON-LD are injected from src/seo (see vite.config.js) -->
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script>
+      // Before first paint: flag JS + motion (turns on the CSS hero intro), and
+      // start at the top — the scroll scenes lay the page out differently from
+      // the prerendered HTML.
+      (function (h) {
+        h.classList.add("js");
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) h.classList.add("motion");
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      })(document.documentElement);
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

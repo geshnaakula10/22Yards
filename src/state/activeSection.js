@@ -18,3 +18,6 @@ function subscribe(l) {
 export function useActiveSection() {
   return useSyncExternalStore(subscribe, () => active, () => null);
 }
+
+/** Whether a nav item (see navItems in content/site.js) should light up for the active section. */
+export const isNavActive = (item, active) => Boolean(active && item.match.includes(active));

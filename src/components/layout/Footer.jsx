@@ -1,5 +1,9 @@
-import { boxCricketPromo, contact, cta, navItems, socials } from "../../content/site";
+import { contact, cta, legalLinks, navItems, pricing, socials } from "../../content/site";
+import { crest } from "../../content/media";
 import CTAButton from "../ui/CTAButton";
+import Icon from "../ui/Icon";
+
+const dayRange = (days) => (days.length > 1 ? `${days[0].slice(0, 3)}–${days[days.length - 1].slice(0, 3)}` : days[0].slice(0, 3));
 
 export default function Footer() {
   return (
@@ -16,11 +20,17 @@ export default function Footer() {
             </h2>
           </div>
           <div className="footer-cta">
-            <CTAButton href={cta.bookNow.href} size="lg">
-              {cta.bookNow.label}
-            </CTAButton>
+            <div className="actions">
+              <CTAButton href={cta.bookLane.href} size="lg">
+                {cta.bookLane.label}
+              </CTAButton>
+              <CTAButton href={cta.directions.href} variant="light" size="lg">
+                {cta.directions.label}
+              </CTAButton>
+            </div>
             <p className="footer-promo">
-              {boxCricketPromo.headline}. {boxCricketPromo.detail}.
+              Lanes from {pricing.lanes.from}/month · Box cricket packages from {pricing.boxCricket.from}/month.{" "}
+              {pricing.boxCricket.detail}.
             </p>
           </div>
         </div>
@@ -29,30 +39,49 @@ export default function Footer() {
           <div className="footer-col">
             <h3 className="footer-col__title">Visit</h3>
             <address>
-              {contact.address.line1}
-              <br />
-              {contact.address.line2}
+              <a href={contact.maps} target="_blank" rel="noopener">
+                {contact.address.line1}
+                <br />
+                {contact.address.line2}
+                <span className="visually-hidden"> (opens Google Maps in a new tab)</span>
+              </a>
             </address>
+            {contact.hours && (
+              <ul className="footer-hours" role="list">
+                {contact.hours.map((h) => (
+                  <li key={h.days.join()}>
+                    <span>{dayRange(h.days)}</span> {h.opens}–{h.closes}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div className="footer-col">
             <h3 className="footer-col__title">Get in touch</h3>
             <ul role="list">
               <li>
-                <a href={contact.phone.href}>{contact.phone.display}</a>
+                <a href={contact.phone.href}>
+                  <Icon name="phone" size={16} /> {contact.phone.display}
+                </a>
               </li>
               <li>
-                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                <a href={`mailto:${contact.email}`}>
+                  <Icon name="mail" size={16} /> {contact.email}
+                </a>
               </li>
             </ul>
           </div>
           <nav className="footer-col" aria-label="Footer">
             <h3 className="footer-col__title">Explore</h3>
-            <ul role="list">
+            <ul role="list" className="footer-col__links">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <a href={item.href}>{item.label}</a>
                 </li>
               ))}
+              <li>
+                <a href="#faq">FAQ</a>
+              </li>
             </ul>
           </nav>
           <div className="footer-col">
@@ -60,8 +89,9 @@ export default function Footer() {
             <ul role="list">
               {socials.map((s) => (
                 <li key={s.label}>
-                  <a href={s.href} aria-label={`22 Yards Houston on ${s.label}`}>
-                    {s.label} <span aria-hidden="true">↗</span>
+                  <a href={s.href} target="_blank" rel="noopener">
+                    <Icon name={s.label.toLowerCase()} size={16} /> {s.label}
+                    <span className="visually-hidden"> — 22 Yards Houston (opens in a new tab)</span>
                   </a>
                 </li>
               ))}
@@ -69,13 +99,20 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="footer-wordmark" aria-hidden="true">
-          22 YARDS
-        </p>
+        <div className="footer-mark" aria-hidden="true">
+          <img className="footer-mark__crest" src={crest.src} width={crest.width} height={crest.height} alt="" loading="lazy" />
+          <p className="footer-wordmark">22 YARDS</p>
+        </div>
 
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} 22 Yards Houston</p>
-          <p className="placeholder-text placeholder-text--dark">[Legal links placeholder]</p>
+          <ul className="footer-legal" role="list">
+            {legalLinks.map((l) => (
+              <li key={l.href}>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

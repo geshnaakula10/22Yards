@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cta, navItems } from "../../content/site";
-import { useActiveSection } from "../../state/activeSection";
+import { crest } from "../../content/media";
+import { isNavActive, useActiveSection } from "../../state/activeSection";
 import MobileMenu from "./MobileMenu";
+import Icon from "../ui/Icon";
 
 export default function Header() {
   const active = useActiveSection();
@@ -22,15 +24,17 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`site-header${scrolled || menuOpen ? " is-raised" : ""}`}>
+    <header className={`site-header${scrolled || menuOpen ? " is-raised" : ""}${menuOpen ? " is-menu-open" : ""}`}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
       <div className="site-header__bar">
         <a className="brand" href="#hero" aria-label="22 Yards Houston — back to top">
-          <span className="brand__mark" aria-hidden="true" />
-          <span className="brand__name">22 YARDS</span>
-          <span className="brand__city">Houston</span>
+          <img className="brand__crest" src={crest.src} width={crest.width} height={crest.height} alt="" />
+          <span className="brand__text">
+            <span className="brand__name">22 YARDS</span>
+            <span className="brand__city">Houston</span>
+          </span>
         </a>
 
         <nav className="site-nav" aria-label="Primary">
@@ -40,7 +44,7 @@ export default function Header() {
                 <a
                   href={item.href}
                   className="site-nav__link"
-                  aria-current={active === item.sectionId ? "location" : undefined}
+                  aria-current={isNavActive(item, active) ? "location" : undefined}
                 >
                   {item.label}
                 </a>
@@ -49,9 +53,12 @@ export default function Header() {
           </ul>
         </nav>
 
-        <a className="btn btn--primary btn--sm site-header__cta" href={cta.bookNow.href}>
-          <span>{cta.bookNow.label}</span>
-          <span className="btn__arrow" aria-hidden="true">↗</span>
+        <a className="btn btn--primary btn--sm site-header__cta" href={cta.bookNow.href} data-magnetic>
+          <span className="btn__label">{cta.bookNow.label}</span>
+          <span className="btn__arrow" aria-hidden="true">
+            <Icon name="arrowRight" size={16} strokeWidth={2} />
+            <Icon name="arrowRight" size={16} strokeWidth={2} />
+          </span>
         </a>
 
         <button

@@ -3,40 +3,60 @@
    Blue  → navigation, selected states, secondary actions, lines, some headings
    Gold  → primary CTAs, highlights, section markers, stats, key words
    Gold is a fill/background colour; use --gold-ink when gold must be text on white.
+
+   Dark scenes (.scene--dark) re-point the ink/card/line tokens, so components
+   written against tokens work on both. Anything that must stay dark whatever
+   the scene (text on gold) uses --ink-dark.
    ========================================================== */
 :root {
-  --white: #fbfaf7;
-  --paper: #f2f0e9;
+  --bg: #f8f7f3;
+  --white: #f8f7f3;
+  --paper: #eeece5;
   --card: #ffffff;
 
-  --ink: #10141c;
-  --ink-2: #3a404c;
-  --ink-3: #5f6572;
+  --ink: #0c111d;
+  --ink-2: #384050;
+  --ink-3: #5b6373;
+  --ink-dark: #0c111d;
 
   --blue: #123a8f;
-  --blue-deep: #0c2a6b;
+  --blue-bright: #2f66e6;
+  --blue-deep: #0a2466;
   --blue-tint: rgba(18, 58, 143, 0.08);
+  --night: #070b17;
   --yellow: #f2b705;
   --gold-ink: #8a6400;
-  --ball: #7c1520;
+  --ball: #8a1a24;
 
-  --line: rgba(16, 20, 28, 0.08);
-  --line-strong: rgba(16, 20, 28, 0.16);
+  /* small accents: marker numbers, labels, icons */
+  --accent: var(--blue);
 
-  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --line: rgba(12, 17, 29, 0.08);
+  --line-strong: rgba(12, 17, 29, 0.16);
+  --spot: rgba(18, 58, 143, 0.09);
+
+  /* self-hosted via @fontsource-variable (imported in App.jsx; the latin files are preloaded, see vite.config.js) */
+  --font-sans: "Geist Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display: "Big Shoulders Display Variable", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 
   --header-h: 60px;
   --gutter: clamp(16px, 5vw, 56px);
   --ball-gutter: 0px;
+  --ruler-w: 0px;
   --max-w: 1320px;
+  /* container left padding: the gutter, or enough to clear the pitch ruler */
+  --container-pl: var(--gutter);
 
   color-scheme: light;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --header-h: 68px;
+    --header-h: 72px;
     /* room on the right of each scene for the docked ball */
     --ball-gutter: clamp(110px, 12vw, 200px);
   }

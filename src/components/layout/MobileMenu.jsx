@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
-import { contact, cta, navItems } from "../../content/site";
+import { contact, cta, navItems, socials } from "../../content/site";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { isNavActive } from "../../state/activeSection";
+import Icon from "../ui/Icon";
 
 /**
  * Full-screen menu for < 1100px. Escape closes it, focus moves into it on
@@ -64,44 +66,52 @@ export default function MobileMenu({ open, onClose, active }) {
   }, [open, onClose]);
 
   return (
-    <div
-      id="mobile-menu"
-      className={`mobile-menu${open ? " is-open" : ""}`}
-      ref={panelRef}
-      hidden={!open}
-    >
+    <div id="mobile-menu" className={`mobile-menu${open ? " is-open" : ""}`} ref={panelRef} hidden={!open}>
       <nav aria-label="Mobile">
         <ol className="mobile-menu__list">
           {navItems.map((item, i) => (
-            <li key={item.href}>
+            <li key={item.href} style={{ "--i": i }}>
               <a
                 href={item.href}
                 className="mobile-menu__link"
-                aria-current={active === item.sectionId ? "location" : undefined}
+                aria-current={isNavActive(item, active) ? "location" : undefined}
                 onClick={followLink}
               >
                 <span className="mobile-menu__index" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 {item.label}
+                <Icon name="arrowRight" size={22} className="mobile-menu__arrow" />
               </a>
             </li>
           ))}
         </ol>
       </nav>
 
-      <a
-        className="btn btn--primary btn--block"
-        href={cta.bookNow.href}
-        onClick={followLink}
-      >
-        <span>{cta.bookNow.label}</span>
-        <span className="btn__arrow" aria-hidden="true">↗</span>
-      </a>
+      <div className="mobile-menu__foot">
+        <a className="btn btn--primary btn--block btn--lg" href={cta.bookNow.href} onClick={followLink}>
+          <span className="btn__label">{cta.bookNow.label}</span>
+          <span className="btn__arrow" aria-hidden="true">
+            <Icon name="arrowRight" size={16} strokeWidth={2} />
+            <Icon name="arrowRight" size={16} strokeWidth={2} />
+          </span>
+        </a>
 
-      <div className="mobile-menu__contact">
-        <a href={contact.phone.href}>{contact.phone.display}</a>
-        <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        <div className="mobile-menu__contact">
+          <a href={contact.phone.href}>
+            <Icon name="phone" size={18} /> {contact.phone.display}
+          </a>
+          <a href={`mailto:${contact.email}`}>
+            <Icon name="mail" size={18} /> {contact.email}
+          </a>
+          <p className="mobile-menu__socials">
+            {socials.map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={`22 Yards Houston on ${s.label} (opens in a new tab)`}>
+                <Icon name={s.label.toLowerCase()} size={20} />
+              </a>
+            ))}
+          </p>
+        </div>
       </div>
     </div>
   );

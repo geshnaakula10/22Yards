@@ -17,7 +17,7 @@
 export const TIMING = {
   enter: 0.6,
   exit: 0.5,
-  hold: 0.7,
+  hold: 0.6,
   /** delay between the previous scene starting to exit and this one entering */
   handoff: 0.35,
   /** how long a tall scene holds before its content starts scrolling internally */
@@ -73,10 +73,16 @@ export function sceneScrollTarget(win, offset = 0) {
   return win.enterEnd + win.holdLead + Math.min(offset, win.overflow);
 }
 
-/** Per-frame progress for one scene at track scroll position `s`. */
+/**
+ * Per-frame progress for one scene at track scroll position `s`.
+ * `local` runs 0 → 1 across the scene's whole on-screen life (enter start → exit end),
+ * for slow parallax/zoom effects.
+ */
 export function sceneProgress(win, s) {
   const enter = win.enterEnd === win.enterStart ? 1 : clamp01((s - win.enterStart) / (win.enterEnd - win.enterStart));
   const exit = win.exitEnd === Infinity ? 0 : clamp01((s - win.exitStart) / (win.exitEnd - win.exitStart));
   const shift = win.overflow > 0 ? Math.min(win.overflow, Math.max(0, s - win.enterEnd - win.holdLead)) : 0;
-  return { enter, exit, shift, weight: enter * (1 - exit) };
+  const end = win.exitEnd === Infinity ? win.exitStart + (win.enterEnd - win.enterStart) : win.exitEnd;
+  const local = end > win.enterStart ? clamp01((s - win.enterStart) / (end - win.enterStart)) : 1;
+  return { enter, exit, shift, local, weight: enter * (1 - exit) };
 }
