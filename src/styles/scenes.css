@@ -55,6 +55,14 @@
 @media (min-width: 640px) {
   .track--live .scene__content { padding-bottom: clamp(120px, 14vh, 150px); }
 }
+/* Phones: the ball leaves with the hero (ballAnimation.js), so there's no docked
+   ball to clear at the bottom — just room to breathe above the progress bar. */
+@media (max-width: 767px) {
+  .track--live .scene__content {
+    padding-top: calc(var(--header-h) + clamp(16px, 4vh, 32px));
+    padding-bottom: clamp(48px, 8vh, 72px);
+  }
+}
 @media (min-width: 1024px) {
   .track--live {
     --ruler-w: 64px;

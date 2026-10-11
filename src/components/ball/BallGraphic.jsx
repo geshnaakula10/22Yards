@@ -2,11 +2,11 @@ import { useId } from "react";
 import CricketBall from "../animation/CricketBall";
 
 /**
- * The ball artwork: soft ground shadow + line-art ball, drawn in a 400x400
- * box. Refs let the persistent ball spin the seam (`seamRef`) and lift the
+ * The ball artwork: soft ground shadow + ball, drawn in a 400x400
+ * box. Refs let the persistent ball spin the ball (`spinRef`) and lift the
  * body off its shadow for hops (`bodyRef`, `shadowRef`).
  */
-export default function BallGraphic({ seamRef, bodyRef, shadowRef, className = "" }) {
+export default function BallGraphic({ spinRef, bodyRef, shadowRef, className = "" }) {
   const blur = `blurShadow-${useId().replace(/:/g, "")}`;
   return (
     <svg className={`ball-graphic ${className}`} viewBox="0 0 400 400" aria-hidden="true" focusable="false">
@@ -27,7 +27,7 @@ export default function BallGraphic({ seamRef, bodyRef, shadowRef, className = "
         filter={`url(#${blur})`}
       />
       <g ref={bodyRef} transform="translate(200,200)">
-        <CricketBall seamRef={seamRef} />
+        <CricketBall spinRef={spinRef} />
       </g>
     </svg>
   );

@@ -9,6 +9,24 @@
 const photo = (file, width, height, alt, widths = [480, 800, 1200]) => ({ file, width, height, alt, widths });
 
 export const media = {
+  birthdays: {
+    src: "/images/birthdays.jpeg",
+    width: 1066,
+    height: 1600,
+    alt: "Birthday parties at 22 Yards Houston",
+  },
+  workshops: {
+    src: "/images/workshops.jpeg",
+    width: 1066,
+    height: 1600,
+    alt: "Cricket workshops and clinics at 22 Yards Houston",
+  },
+  tournaments: {
+    src: "/images/tournaments.jpeg",
+    width: 1024,
+    height: 683,
+    alt: "Young cricket players shaking hands before a tournament",
+  },
   pitch: photo(
     "pitch",
     1200,

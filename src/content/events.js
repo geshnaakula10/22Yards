@@ -35,7 +35,7 @@ export const eventTypes = [
     id: "birthdays",
     title: "Birthday parties",
     text: "A cricket-themed celebration with activities tailored to age and skill level, exclusive facility access, and flexible catering — on-site or bring your own.",
-    photo: "turf",
+    photo: "birthdays",
   },
   {
     id: "corporate",
@@ -47,12 +47,12 @@ export const eventTypes = [
     id: "tournaments",
     title: "Tournaments",
     text: "Flexible lane and field usage for your format, with scheduling, umpiring and logistics support, plus refreshments and seating for players and spectators.",
-    photo: "lanes",
+    photo: "tournaments",
   },
   {
     id: "clinics",
     title: "Workshops & clinics",
     text: "Batting, bowling and fielding clinics in small groups, with expert coaches and smart-lane video analysis.",
-    photo: "nets",
+    photo: "workshops",
   },
 ];

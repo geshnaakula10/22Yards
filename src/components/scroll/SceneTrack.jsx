@@ -148,7 +148,8 @@ export default function SceneTrack({ children, overlay }) {
       const heroPose = {
         x: slotBox.left - heroBox.left + slotBox.width / 2,
         y: slotBox.top - heroBox.top + slotBox.height / 2,
-        size: slotBox.width,
+        // The slot is square on desktop; on phones it fills a row, so fit the ball to its shorter side.
+        size: Math.min(slotBox.width, slotBox.height),
       };
 
       state = {

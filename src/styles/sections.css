@@ -137,6 +137,48 @@
 
 @media (max-width: 639px) {
   .hero__actions { display: grid; grid-template-columns: 1fr 1fr; }
+  /* Phones: the ball gets the open space between the headline and the lede,
+     sized to whatever room that row has (SceneTrack sizes the live ball from
+     the slot's shorter side). */
+  .hero {
+    height: calc(100svh - var(--header-h));
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+  }
+  .hero__ball {
+    align-self: stretch;
+    justify-self: stretch;
+    width: auto;
+    max-height: 64vw;
+    aspect-ratio: auto;
+    margin: 0;
+  }
+  .hero__band { padding-top: 10px; }
+  .hero__band .marquee__item {
+    gap: 1.3rem;
+    padding: 1rem 1.3rem 0.9rem 0;
+    font-size: clamp(1.35rem, 6.6vw, 1.85rem);
+  }
+  .hero__band .marquee__sep { width: 22px; height: 22px; }
+}
+/* Short phones (iPhone SE): no spare row, so the ball sits beside the short
+   "PLAY. / TRAIN." lines instead, and the whole hero still fits. */
+@media (max-width: 639px) and (max-height: 700px) {
+  .hero {
+    height: auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "title" "foot" "band";
+  }
+  .hero__ball {
+    grid-area: title;
+    align-self: center;
+    justify-self: end;
+    width: clamp(104px, 34vw, 150px);
+    max-height: none;
+    aspect-ratio: 1 / 1;
+  }
+}
+@media (max-width: 379px) {
+  .hero__actions .btn { gap: 0.5rem; padding-inline: 0.75rem; letter-spacing: 0.05em; }
 }
 @media (max-width: 899px) and (max-height: 720px) {
   .hero__meta { display: none; }
@@ -422,6 +464,13 @@
 @media (min-width: 900px) {
   .triad { flex-direction: column; }
   .triad__word--2 { padding-left: 0.5em; }
+}
+/* Phones: stacked like desktop (no orphaned "LEAD."), and no parallax drift —
+   in a single column it would push the words into the vision card below. */
+@media (max-width: 767px) {
+  .triad { flex-direction: column; font-size: clamp(3rem, 15vw, 4.2rem); }
+  .triad__word--2 { padding-left: 0.5em; }
+  .track--live .triad { transform: none !important; }
 }
 
 /* ==========================================================

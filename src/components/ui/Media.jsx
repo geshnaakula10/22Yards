@@ -17,8 +17,8 @@ export default function Media({ name, sizes = "(min-width: 900px) 45vw, 100vw", 
   const near = useSceneNear();
   const m = media[name];
   if (!m) return null;
-  const srcSet = m.widths.map((w) => `/images/${m.file}-${w}.webp ${w}w`).join(", ");
-  const fallback = `/images/${m.file}-${m.widths.find((w) => w >= 800) ?? m.widths[m.widths.length - 1]}.webp`;
+  const srcSet = m.src ? undefined : m.widths.map((w) => `/images/${m.file}-${w}.webp ${w}w`).join(", ");
+  const fallback = m.src ?? `/images/${m.file}-${m.widths.find((w) => w >= 800) ?? m.widths[m.widths.length - 1]}.webp`;
   const load = near || priority;
 
   return (

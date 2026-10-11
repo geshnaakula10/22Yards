@@ -11,13 +11,26 @@ import { clamp01 } from "./sceneLayout";
  *   hop        → every scene change after that bounces it once, like a
  *                delivery pitching on the 22 yards
  *   exit       → slides off to the right and fades just before the footer
+ *
+ * Phones (below MOBILE_MAX) only get the opening: instead of docking, the
+ * ball lifts away with the hero as it leaves, shrinking and fading out over
+ * the first part of the dock window, and stays gone for the rest of the track.
  */
+
+/** Widths below this (px) count as phones: the ball is used for the hero only. */
+export const MOBILE_MAX = 768;
+export const isPhone = (vw) => vw < MOBILE_MAX;
+
+/** Share of the dock window the phone exit takes, so it's gone before the next scene arrives. */
+const PHONE_EXIT = 0.55;
 
 /** Same spin speed as the original hero: 900deg over its 220vh of scroll. */
 const DEG_PER_VIEWPORT = 900 / 2.2;
 
 /** Size of the ball's SVG box in px; poses scale it. */
 export const BALL_BOX = 400;
+
+export const isDesktop = (vw) => vw >= 1024;
 
 export function dockPose(vw, vh) {
   if (vw >= 1024) {
@@ -57,8 +70,35 @@ export function hopHeight(progress) {
  * @returns {{ x, y, scale, opacity, rotation }}
  */
 export function ballFrame(s, { ball, heroPose, vw, vh, reduced }) {
-  const dock = dockPose(vw, vh);
   const dockRaw = clamp01((s - ball.dockStart) / (ball.dockEnd - ball.dockStart));
+  const perViewport = reduced ? 0 : DEG_PER_VIEWPORT;
+  const rotation = (Math.max(0, s) / vh) * perViewport;
+
+  if (isPhone(vw)) {
+    const t = ease(clamp01(dockRaw / PHONE_EXIT));
+    return {
+      x: heroPose.x + t * vw * 0.18,
+      y: heroPose.y - t * vh * 0.2,
+      scale: (heroPose.size * (1 - 0.45 * t)) / BALL_BOX,
+      opacity: 1 - t,
+      rotation,
+    };
+  }
+
+  if (isDesktop(vw)) {
+    const t = clamp01(Math.max(0, s) / ball.dockStart);
+    const radius = heroPose.size * 125 / BALL_BOX;
+    const distance = (vw - heroPose.x + radius * 2) * t;
+    return {
+      x: heroPose.x + distance,
+      y: heroPose.y,
+      scale: heroPose.size / BALL_BOX,
+      opacity: 1 - ease(clamp01((t - 0.65) / 0.35)),
+      rotation: reduced || radius <= 0 ? 0 : distance / radius * 180 / Math.PI,
+    };
+  }
+
+  const dock = dockPose(vw, vh);
   const dockT = ease(dockRaw);
   const exitT = ease(clamp01((s - ball.exitStart) / (ball.exitEnd - ball.exitStart)));
 
@@ -66,13 +106,12 @@ export function ballFrame(s, { ball, heroPose, vw, vh, reduced }) {
   const loft = Math.sin(Math.PI * dockRaw) * vh * 0.14;
   const x = lerp(heroPose.x, dock.x, dockT) + exitT * (vw - dock.x + dock.size);
   const y = lerp(heroPose.y, dock.y, dockT) - loft;
-  const perViewport = reduced ? 0 : DEG_PER_VIEWPORT;
 
   return {
     x,
     y,
     scale: size / BALL_BOX,
     opacity: 1 - exitT,
-    rotation: (Math.max(0, s) / vh) * perViewport,
+    rotation,
   };
 }
